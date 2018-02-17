@@ -316,7 +316,7 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-void choose(string command, Stack S) {
+void choose(string command, SkipList S) {
 	switch(resolveOption(command)) {
 			case 0: {
 
