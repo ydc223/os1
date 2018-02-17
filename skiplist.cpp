@@ -316,7 +316,7 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-void choose(string command) {
+void choose(string command, Stack S) {
 	switch(resolveOption(command)) {
 			case 0: {
 
@@ -490,7 +490,7 @@ int main(int argc, char* argv[])
 	while (programOn) {
 		cout<<"Input a command please"<<endl;
 		cin >> command;
-		choose(command);
+		choose(command, S);
 	}
 		
     
