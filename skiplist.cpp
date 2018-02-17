@@ -53,13 +53,16 @@ SkipList::~SkipList() {
 	cout<<"Deconstruct"<<endl;
     //Initialise a holder node
     Node *n;
-
+    Node *prev = NULL;
     // Iterate over the linked list
     // and delete all nodes.
     for (n=header; n!=NULL; n=&(n->forwarding[0])) {
-    	cout << n->data;
-   		delete n->record;
-        delete n;
+    	if (prev) {
+    		delete prev->record;
+
+    		delete prev;
+    	}
+    	prev = n;
     }
 }
 
