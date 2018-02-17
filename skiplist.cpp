@@ -58,7 +58,6 @@ SkipList::~SkipList() {
     // and delete all nodes.
     for (n=header; n!=NULL; n=&(n->forwarding[0])) {
     	cout << n->data;
-    	delete[] n->forwarding;
    		delete n->record;
         delete n;
     }
