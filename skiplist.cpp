@@ -10,6 +10,8 @@ using namespace std;
 
 int maxLevel = 0;
 int maxValue = 0;
+bool programOn = true;
+
 
 struct Node {
 	int data;
@@ -60,7 +62,6 @@ SkipList::~SkipList() {
     	if (prev) {
     		delete prev->record;
 
-    		delete prev;
     	}
     	prev = n;
     }
@@ -315,43 +316,8 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-int main(int argc, char* argv[]) 
-{
-	maxLevel =  atoi(argv[1]);
-	maxValue =  atoi(argv[2]);
-	srand(time(0));
-
-	cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
-
-	SkipList S;
-	cout << "---------INSERTING 3-------------" << endl;
-	S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 5-------------" << endl;
-	S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 4-------------" << endl;
-	S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 8-------------" << endl;
-	S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 6-------------" << endl;
-	S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
-
-
-	Options resolveOption(string command);
-	bool programOn = true;
-	bool file = false;
-	string command;
-
-
-	while (programOn) {
-
-		// if(!file)
-			cout<<"Input a command please"<<endl;
-			cin >> command;
-		switch(resolveOption(command)) {
+void choose(string command) {
+	switch(resolveOption(command)) {
 			case 0: {
 
 				cout << "------Insert---------"<<endl;
@@ -456,6 +422,7 @@ int main(int argc, char* argv[])
 				break; 
 			}
 			case 7: {
+				file = true;
 				string filename;
 				cin >> filename;
 
@@ -466,6 +433,7 @@ int main(int argc, char* argv[])
 		        {
 			        getline(infile,line); // Saves the line in STRING.
 			        cout<<line<<endl; // Prints our STRING.
+			        choose(line);
 		        }
 
 				infile.close();
@@ -487,9 +455,47 @@ int main(int argc, char* argv[])
 				break; 
 			}
 		}
+}
+
+int main(int argc, char* argv[]) 
+{
+	maxLevel =  atoi(argv[1]);
+	maxValue =  atoi(argv[2]);
+	srand(time(0));
+
+	cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
+
+	SkipList S;
+	cout << "---------INSERTING 3-------------" << endl;
+	S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 5-------------" << endl;
+	S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 4-------------" << endl;
+	S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 8-------------" << endl;
+	S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 6-------------" << endl;
+	S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
+
+
+	Options resolveOption(string command);
+	bool file = false;
+	string command;
+
+
+	while (programOn) {
+		cout<<"Input a command please"<<endl;
+		cin >> command;
+		choose(command);
 	}
+		
     
     return 0;
+	
 }
 
 
