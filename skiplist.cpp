@@ -422,7 +422,6 @@ void choose(string command, SkipList S) {
 				break; 
 			}
 			case 7: {
-				file = true;
 				string filename;
 				cin >> filename;
 
@@ -433,7 +432,7 @@ void choose(string command, SkipList S) {
 		        {
 			        getline(infile,line); // Saves the line in STRING.
 			        cout<<line<<endl; // Prints our STRING.
-			        choose(line);
+			        choose(line, S);
 		        }
 
 				infile.close();
