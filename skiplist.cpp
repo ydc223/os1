@@ -430,7 +430,7 @@ void choose(string command, SkipList S, string arguments) {
 		        {
 		        	
 			        getline(infile,line); // Saves the line in STRING.
-			        string command = line.substr(0, input.find(" "));
+			        string command = line.substr(0, line.find(" "));
 			        cout<<"Command: "<<command<<" Line: "<<line<<endl; // Prints our STRING.
 			        choose(command, S, line);
 		        }
