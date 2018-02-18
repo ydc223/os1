@@ -492,6 +492,7 @@ int main(int argc, char* argv[])
 		string line;
 		getline(std::cin, line);
 		isOver = choose(command, S, line);
+		cout << isOver;
 	}
 	
 
