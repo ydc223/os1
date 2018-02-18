@@ -349,9 +349,7 @@ void choose(string command, SkipList S, string arguments) {
 			case 1: {
 				cout << "-------find------"<<endl;
 				int id;
-				cin >> id;
-				string line;
-				getline(std::cin, line);
+				iss >> id;
 				Node* node = S.find(id);
 				S.getRecord(node);
 				break; 
@@ -359,9 +357,7 @@ void choose(string command, SkipList S, string arguments) {
 			case 2: {
 				cout << "sfind";
 				int id;
-				cin >> id;
-				string line;
-				getline(std::cin, line);
+				iss >> id;
 				int comparisons = S.findComp(id);
 				cout << "Number of comparisons: " << comparisons << endl;
 				break; 
@@ -370,8 +366,8 @@ void choose(string command, SkipList S, string arguments) {
 				cout << "range";
 				int id1;
 				int id2;
-				cin >> id1;
-				cin >> id2;
+				iss >> id1;
+				iss >> id2;
 				S.range(id1, id2);
 				// string line;
 				// getline(std::cin, line);
@@ -382,9 +378,7 @@ void choose(string command, SkipList S, string arguments) {
 				cout << "gpa "<<endl;
 
 				vector<int> v;
-				std::string line;
-				getline(std::cin, line);
-				istringstream iss(line);
+
 				while (iss >> temp){
 				    v.push_back(temp);
 				}
@@ -411,7 +405,7 @@ void choose(string command, SkipList S, string arguments) {
 			}
 			case 5: {
 				int id;
-				cin >> id;
+				iss >> id;
 				S.del(id);
 				break; 
 			}
@@ -451,7 +445,7 @@ void choose(string command, SkipList S, string arguments) {
 			case 9: {
 
 				cout << "Option is invalid. Please input a valid option";
-				cin >> command;
+				iss >> command;
 				break; 
 			}
 		}
