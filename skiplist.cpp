@@ -65,7 +65,7 @@ SkipList::~SkipList() {
     }
 
     for(numNodes; numNodes < 0; numNodes--){
-    	n=header
+    	n=header;
     	for (int i = 0; i<numNodes; i++) {
 	    	n=&(n->forwarding[0])
     	}
