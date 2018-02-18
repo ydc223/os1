@@ -316,7 +316,9 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-void choose(string command, SkipList S, istringstream iss) {
+void choose(string command, SkipList S, string arguments) {
+	istringstream iss(arguments);
+
 	switch(resolveOption(command)) {
 			case 0: {
 
@@ -428,10 +430,9 @@ void choose(string command, SkipList S, istringstream iss) {
 		        {
 		        	string command;
 			        getline(infile,line); // Saves the line in STRING.
-			        istringstream filestr(line);
 			        filestr >> command;
 			        cout<<line<<endl; // Prints our STRING.
-			        choose(command, S, filestr);
+			        choose(command, S, line);
 		        }
 
 				infile.close();
@@ -490,8 +491,7 @@ int main(int argc, char* argv[])
 		cin >> command;
 		string line;
 		getline(std::cin, line);
-		istringstream iss(line);
-		choose(command, S, iss);
+		choose(command, S, line);
 	}
 		
     
