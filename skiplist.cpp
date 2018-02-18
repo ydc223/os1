@@ -428,10 +428,10 @@ void choose(string command, SkipList S, string arguments) {
 				infile.open(filename);
 		        while(!infile.eof()) // To get you all the lines.
 		        {
-		        	string command;
+		        	
 			        getline(infile,line); // Saves the line in STRING.
-			        filestr >> command;
-			        cout<<line<<endl; // Prints our STRING.
+			        string command = line.substr(0, input.find(" "));
+			        cout<<"Command: "<<command<<" Line: "<<line<<endl; // Prints our STRING.
 			        choose(command, S, line);
 		        }
 
