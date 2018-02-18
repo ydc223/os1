@@ -386,7 +386,7 @@ void choose(string command, SkipList S) {
 				vector<int> v;
 				std::string line;
 				getline(std::cin, line);
-				std::istringstream iss(line);
+				istringstream iss(line);
 				while (iss >> temp){
 				    v.push_back(temp);
 				}
@@ -430,9 +430,12 @@ void choose(string command, SkipList S) {
 				infile.open(filename);
 		        while(!infile.eof()) // To get you all the lines.
 		        {
+		        	string temp;
 			        getline(infile,line); // Saves the line in STRING.
-			        cout<<line<<endl; // Prints our STRING.
-			        choose(line, S);
+			        istringstream iss(line);
+			        iss >> temp;
+			        cout<<temp<<endl; // Prints our STRING.
+			        choose(temp, S);
 		        }
 
 				infile.close();
