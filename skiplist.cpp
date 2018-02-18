@@ -432,7 +432,10 @@ int choose(string command, SkipList S, string arguments) {
 			        string fileCommand = line.substr(0, line.find(" "));
 			        string substring2 = line.substr(line.find(" ") + 1);
 			        cout<<"Command: "<<fileCommand<<" Line: "<<line << "substr:"<< substring2<<endl; // Prints our STRING.
-			        choose(fileCommand, S, substring2);
+			        int checkIfOver = choose(fileCommand, S, substring2);
+			        if(checkIfOver) {
+			        	return 1;
+			        }
 		        }
 
 				infile.close();
