@@ -321,10 +321,6 @@ void choose(string command, SkipList S) {
 			case 0: {
 
 				cout << "------Insert---------"<<endl;
-
-				string line;
-				getline(std::cin, line);
-				istringstream iss(line);
 				
 				int id;
 				string fName;
@@ -430,12 +426,12 @@ void choose(string command, SkipList S) {
 				infile.open(filename);
 		        while(!infile.eof()) // To get you all the lines.
 		        {
-		        	string temp;
+		        	string command;
 			        getline(infile,line); // Saves the line in STRING.
 			        istringstream iss(line);
-			        iss >> temp;
-			        cout<<temp<<endl; // Prints our STRING.
-			        choose(temp, S);
+			        iss >> command;
+			        cout<<line<<endl; // Prints our STRING.
+			        choose(command, S, iss);
 		        }
 
 				infile.close();
@@ -492,7 +488,10 @@ int main(int argc, char* argv[])
 	while (programOn) {
 		cout<<"Input a command please"<<endl;
 		cin >> command;
-		choose(command, S);
+		string line;
+		getline(std::cin, line);
+		istringstream iss(line);
+		choose(command, S, iss);
 	}
 		
     
