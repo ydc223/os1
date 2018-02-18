@@ -316,7 +316,7 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-void choose(string command, SkipList S) {
+void choose(string command, SkipList S, istringstream iss) {
 	switch(resolveOption(command)) {
 			case 0: {
 
@@ -428,10 +428,10 @@ void choose(string command, SkipList S) {
 		        {
 		        	string command;
 			        getline(infile,line); // Saves the line in STRING.
-			        istringstream iss(line);
-			        iss >> command;
+			        istringstream filestr(line);
+			        filestr >> command;
 			        cout<<line<<endl; // Prints our STRING.
-			        choose(command, S, iss);
+			        choose(command, S, filestr);
 		        }
 
 				infile.close();
