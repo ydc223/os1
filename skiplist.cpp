@@ -16,7 +16,7 @@ bool programOn = true;
 struct Node {
 	int data;
 	struct Record* record;
-	Node** forwarding;
+	Node* forwarding;
 	int level;
 	~Node(){
 
@@ -45,8 +45,6 @@ public:
     void range(int id1, int id2, int opt);
     int findComp(int id);
     Node* findAtLevel(int id, int level);
-    Node* makeNode(int level, int id, string fName, string lName, int age, int year, double gpa, int numOfCourses);
-
 
     bool isEmpty();
     void print();
@@ -60,9 +58,10 @@ SkipList::~SkipList() {
     Node *prev = NULL;
     // Iterate over the linked list
     // and delete all nodes.
-    for (n=header; n!=NULL; n=(n->forwarding[0])) {
+    for (n=header; n!=NULL; n=&(n->forwarding[0])) {
     	if (prev) {
     		delete prev->record;
+
     	}
     	prev = n;
     }
@@ -73,7 +72,7 @@ SkipList::SkipList() {
     // Setup null pointer
     Node *topElement = new Node;
     topElement->data = 0;
-    topElement->forwarding = new Node*[maxLevel - 1];
+    topElement->forwarding = new Node[maxLevel];
     topElement->level = maxLevel;
     
     Node *lastElement = new Node;
@@ -82,7 +81,7 @@ SkipList::SkipList() {
     lastElement->level = 1;
 
     for (int i = 0; i < maxLevel; i++) {
-    	topElement->forwarding[i] = lastElement;
+    	topElement->forwarding[i] = *lastElement;
     }
 
     header = topElement;
@@ -92,15 +91,15 @@ SkipList::SkipList() {
 void SkipList::print() {
     cout << "________Printing the skiplist: ________"<< endl ;
 
-    Node *current = header->forwarding[0];
+    Node *current = &header->forwarding[0];
     while (current->data != maxValue) {
     	cout << "Level: " << current->level << " Val: " << current->data << " Name: "<< current->record-> fName << " | ";
     	for (int i = 0; i < current->level; i++) {
 
-    		cout << (current->forwarding)[i]->data << " ";
+    		cout << (current->forwarding)[i].data << " ";
     	}
     	cout << "| "<<endl;
-    	current = (current->forwarding[0]);
+    	current = &(current->forwarding[0]);
     }
     cout << endl;
 }
@@ -111,27 +110,46 @@ void SkipList::getRecord(Node *ptr) {
 }
 
 Node* SkipList::find(int id, int opt = 0) {
-	Node *current = header;
+	int level = maxLevel;
+    Node *current = header;
+    Node *next = &(current->forwarding[level]);
 
-	for(int i = maxLevel-1; i >= 0; i++ ) {
-		while(current->data < id) {
-			current = current->forwarding[i];
-		}
+    while (next->data != id) {
+	    if(next->data > id) {
+	    	if (level != 0){
+	    		level --;
+	    		next = &(current->forwarding[level]);
+	    	} else {
+	    		// cout << "did not find an element, next one is: "<<next->data<< endl;
+	    		if (opt == 1) {
+	    			// if searching to insert return the previous one
+	    			return current;
+	    		} else {
+
+	    			return nullptr;
+	    		}
+	    	}
+	    } else if (next->data < id) {
+	    	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
+    		current = next;
+    		// cout << "current "<< current->data<<endl;
+    		next = &(current->forwarding[level]);
+    		// cout << "next "<< next->data<<endl;
+	    }
 	}
-
-	current = current->forwarding[0];
-	if (current->data == id) {
+	// cout << "found an element: "<< next->data << " at level "<< level<< endl;
+	if (opt == 1) {
+		// if searching to insert return the previous one
 		return current;
-	} else {
-		return nullptr;
-	}
+	} 
+	return next;
 }
 
 int SkipList::findComp(int id) {
 	int level = maxLevel;
 	int comp = 0;
     Node *current = header;
-    Node *next = (current->forwarding[level]);
+    Node *next = &(current->forwarding[level]);
     while (next->data != id) {
 
     	comp++;
@@ -140,7 +158,7 @@ int SkipList::findComp(int id) {
 	    	if (level != 0){
 	    		comp++;
 	    		level --;
-	    		next = (current->forwarding[level]);
+	    		next = &(current->forwarding[level]);
 	    	} else {
 	    		// cout << "did not find an element, next one is: "<<next->data<< endl;
 	    		return comp;
@@ -150,7 +168,7 @@ int SkipList::findComp(int id) {
 	    	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
     		current = next;
     		// cout << "current "<< current->data<<endl;
-    		next = (current->forwarding[level]);
+    		next = &(current->forwarding[level]);
     		// cout << "next "<< next->data<<endl;
 	    }
 	}
@@ -161,13 +179,13 @@ int SkipList::findComp(int id) {
 void SkipList::range(int id1, int id2, int opt = 0) {
 	int level = maxLevel;
     Node *current = header;
-    Node *next = (current->forwarding[level]);
+    Node *next = &(current->forwarding[level]);
     Node *start;
     while (next->data != id1) {
 	    if(next->data > id1) {
 	    	if (level != 0){
 	    		level --;
-	    		next = (current->forwarding[level]);
+	    		next = &(current->forwarding[level]);
 	    	} else {
 	    		if(next->data < id2)
 	    		start = next;
@@ -176,7 +194,7 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 	    } else if (next->data < id1) {
 
     		current = next;
-    		next = (current->forwarding[level]);
+    		next = &(current->forwarding[level]);
 	    }
 	}
 	
@@ -185,7 +203,7 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 	if (opt == 0){
 		while (start->data >= id1 && start->data <= id2) {
 			getRecord(start);
-			start = start->forwarding[0];
+			start = &start->forwarding[0];
 		}
 	} else {
 		float total = 0;
@@ -194,7 +212,7 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 		while (start->data >= id1 && start->data <= id2) {
 			total += start->record->gpa;
 			count++;
-			start = start->forwarding[0];
+			start = &start->forwarding[0];
 		}
 		av = total/count;
 		cout <<av<<endl;
@@ -204,21 +222,23 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 
 Node* SkipList::findAtLevel(int id, int level) {
     Node *current = header;
-    Node *next = current->forwarding[level];
+    Node *next = &current->forwarding[level];
     // cout << "In findPrevLevel current data: " << next->data << endl;
     while (next->data < id) {
     	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
 		current = next;
-		next = current->forwarding[level];
+		next = &current->forwarding[level];
 	}
 	// cout << "found a prev: " << current->data << endl;
 	return current;
 }
 
-Node* SkipList::makeNode(int id, int level, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
+void SkipList::insert(int id, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
+
+    int level = (rand() % maxLevel);
     Node * newNode = new Node;
     newNode->data = id;
-    newNode->forwarding = new Node*[level-1];
+    newNode->forwarding = new Node[level];
     newNode->level = level;
     newNode->record = new Record;
 
@@ -228,61 +248,21 @@ Node* SkipList::makeNode(int id, int level, string fName, string lName, int age,
     newNode->record->year = year;
     newNode->record->gpa = gpa;
     newNode->record->numOfCourses = numOfCourses;
-    return newNode;
-}
 
-void SkipList::insert(int id, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
+    Node* prev = find(id, 1);
+    cout << "Find in insert, prev node is: "<<prev-> data <<". ";
 
-	Node **update = new Node*[maxLevel-1];
-	Node *current = header;
-	cout << maxLevel<<endl;
+    // newNode forwarding set to the next
+    for (int i = 0; i < level; i++) {
+    	if (prev->level > i) {
+    	} else {
+    		prev = findAtLevel(id, i);
+    	}
+    	newNode->forwarding[i] = prev->forwarding[i];
+		(prev->forwarding)[i] = *newNode;
+   	}
 
-
-	for(int i = maxLevel-1; i > 0; i-- ) {
-		cout<<i<<endl;
-		while(current->data < id) {
-			current = current->forwarding[i];
-			cout << "here3"<<endl;
-		}
-		update[i] = current;
-	}
-
-	current = current->forwarding[0];
-
-	cout << "here4"<<current->data<<endl;
-
-
-	if(current->data == id) {
-		cout << "same key"<<endl;
-
-	} else {
-		cout << "here5"<<endl;
-
-
-		int level = (rand() % maxLevel);
-
-		current = makeNode(id, level, fName, lName, age, year, gpa, numOfCourses);
-
-		for (int i = 0; i < level; i++)	{
-			current->forwarding[i] = update[i]->forwarding[i];
-			update[i]->forwarding[i] = current;
-		}
-	}
-
-  //   Node* prev = find(id, 1);
-  //   cout << "Find in insert, prev node is: "<<prev-> data <<". ";
-
-  //   // newNode forwarding set to the next
-  //   for (int i = 0; i < level; i++) {
-  //   	if (prev->level > i) {
-  //   	} else {
-  //   		prev = findAtLevel(id, i);
-  //   	}
-  //   	newNode->forwarding[i] = prev->forwarding[i];
-		// (prev->forwarding)[i] = *newNode;
-  //  	}
-
-  //   cout << "Level of current insertion: " << level << endl;
+    cout << "Level of current insertion: " << level << endl;
 }
 
 void SkipList::del(int id) {
@@ -311,6 +291,16 @@ void SkipList::del(int id) {
    	// delete delNode;
 }
 
+// Stack is empty function
+bool SkipList::isEmpty(){
+	for (int i = 0; i < maxLevel; i++) {
+    	if((header->forwarding)[i].forwarding == footer){
+    		return false;
+    	}
+    }
+    return (true);
+}
+
 enum Options {ins, find_elem, sfind, range, gpa, del, print, load, exit_program, Option_Invalid /*others...*/};
 
 enum Options resolveOption(string command) {
@@ -325,47 +315,6 @@ enum Options resolveOption(string command) {
 	    if( command == "exit" ) return exit_program;
 	    return Option_Invalid;
 }
-
-
-int main(int argc, char* argv[]) 
-{
-	maxLevel =  atoi(argv[1]);
-	maxValue =  atoi(argv[2]);
-	srand(time(0));
-
-	cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
-
-	SkipList S;
-	cout << "---------INSERTING 3-------------" << endl;
-	S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 5-------------" << endl;
-	// S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 4-------------" << endl;
-	// S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 8-------------" << endl;
-	// S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 6-------------" << endl;
-	// S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
-
-
-	// Options resolveOption(string command);
-	// bool file = false;
-	// string command;
-
-
-	// while (programOn) {
-	// 	cout<<"Input a command please"<<endl;
-	// 	cin >> command;
-	// 	choose(command, S);
-	// }
-    
-    return 0;	
-}
-
 
 void choose(string command, SkipList S) {
 	switch(resolveOption(command)) {
@@ -437,7 +386,7 @@ void choose(string command, SkipList S) {
 				vector<int> v;
 				std::string line;
 				getline(std::cin, line);
-				std::istringstream iss(line);
+				istringstream iss(line);
 				while (iss >> temp){
 				    v.push_back(temp);
 				}
@@ -481,9 +430,12 @@ void choose(string command, SkipList S) {
 				infile.open(filename);
 		        while(!infile.eof()) // To get you all the lines.
 		        {
+		        	string temp;
 			        getline(infile,line); // Saves the line in STRING.
-			        cout<<line<<endl; // Prints our STRING.
-			        choose(line, S);
+			        istringstream iss(line);
+			        iss >> temp;
+			        cout<<temp<<endl; // Prints our STRING.
+			        choose(temp, S);
 		        }
 
 				infile.close();
@@ -506,6 +458,50 @@ void choose(string command, SkipList S) {
 			}
 		}
 }
+
+int main(int argc, char* argv[]) 
+{
+	maxLevel =  atoi(argv[1]);
+	maxValue =  atoi(argv[2]);
+	srand(time(0));
+
+	cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
+
+	SkipList S;
+	cout << "---------INSERTING 3-------------" << endl;
+	S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 5-------------" << endl;
+	S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 4-------------" << endl;
+	S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 8-------------" << endl;
+	S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
+	// S.print();
+	cout << "---------INSERTING 6-------------" << endl;
+	S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
+
+
+	Options resolveOption(string command);
+	bool file = false;
+	string command;
+
+
+	while (programOn) {
+		cout<<"Input a command please"<<endl;
+		cin >> command;
+		choose(command, S);
+	}
+		
+    
+    return 0;
+	
+}
+
+
+
 
 	// maxLevel =  atoi(argv[1]);
 	// maxValue =  atoi(argv[2]);
