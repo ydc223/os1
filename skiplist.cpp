@@ -52,18 +52,24 @@ public:
 };
 
 SkipList::~SkipList() {
-	cout<<"Deconstruct"<<endl;
+	// cout<<"Deconstruct"<<endl;
     //Initialise a holder node
     Node *n;
     Node *prev = NULL;
     // Iterate over the linked list
     // and delete all nodes.
-    for (n=header; n!=NULL; n=&(n->forwarding[0])) {
-    	if (prev) {
-    		delete prev->record;
+    int numNodes;
 
-    	}
+    for (n=header; n!=NULL; n=&(n->forwarding[0])) {
     	prev = n;
+    	numNodes++;
+    }
+
+    for(numNodes; numNodes < 0; numNodes--){
+    	for (n=header; n<numNodes; n=&(n->forwarding[0])) {
+	    	prev = n;
+    	}
+    	delete prev;
     }
 }
 

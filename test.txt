@@ -1,3 +1,7 @@
 ins 5 yana chala 6 5 4 3
 del 5
+range 2 7
+gpa 5
+gpa 2 7
+exit
 
