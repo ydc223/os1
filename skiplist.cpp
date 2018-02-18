@@ -151,7 +151,7 @@ Node* SkipList::find(int id, int opt = 0) {
 }
 
 int SkipList::findComp(int id) {
-	int level = maxLevel;
+	int level = maxLevel-1;
 	int comp = 0;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
@@ -182,7 +182,7 @@ int SkipList::findComp(int id) {
 }
 
 void SkipList::range(int id1, int id2, int opt = 0) {
-	int level = maxLevel;
+	int level = maxLevel-1;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
     Node *start;
