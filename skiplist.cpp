@@ -10,7 +10,6 @@ using namespace std;
 
 int maxLevel = 0;
 int maxValue = 0;
-bool programOn = true;
 
 
 struct Node {
@@ -322,7 +321,7 @@ enum Options resolveOption(string command) {
 	    return Option_Invalid;
 }
 
-void choose(string command, SkipList S, string arguments) {
+int choose(string command, SkipList S, string arguments) {
 	istringstream iss(arguments);
 
 	switch(resolveOption(command)) {
@@ -443,10 +442,9 @@ void choose(string command, SkipList S, string arguments) {
 				break; 
 			}
 			case 8: {
-				programOn = false;
 				// implement deconstructor
 				cout << "exit";
-				break; 
+				return 1;
 			}
 			case 9: {
 
@@ -455,6 +453,7 @@ void choose(string command, SkipList S, string arguments) {
 				break; 
 			}
 		}
+		return 0;
 }
 
 int main(int argc, char* argv[]) 
@@ -485,16 +484,18 @@ int main(int argc, char* argv[])
 	Options resolveOption(string command);
 	bool file = false;
 	string command;
+	int isOver = 0;
 
-
-	while (programOn) {
+	while(!isOver) {
 		cout<<"Input a command please"<<endl;
 		cin >> command;
 		string line;
 		getline(std::cin, line);
-		choose(command, S, line);
+		isOver = choose(command, S, line);
 	}
-		
+	
+
+	
     
     return 0;
 	

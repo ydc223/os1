@@ -4,4 +4,3 @@ range 2 7
 gpa 5
 gpa 2 7
 exit
-
