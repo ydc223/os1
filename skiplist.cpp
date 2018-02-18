@@ -61,15 +61,15 @@ SkipList::~SkipList() {
     int numNodes;
 
     for (n=header; n!=NULL; n=&(n->forwarding[0])) {
-    	prev = n;
     	numNodes++;
     }
 
     for(numNodes; numNodes < 0; numNodes--){
-    	for (n=header; n<numNodes; n=&(n->forwarding[0])) {
-	    	prev = n;
+    	n=header
+    	for (int i = 0; i<numNodes; i++) {
+	    	n=&(n->forwarding[0])
     	}
-    	delete prev;
+    	delete n;
     }
 }
 
