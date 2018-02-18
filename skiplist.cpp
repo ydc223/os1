@@ -115,7 +115,7 @@ void SkipList::getRecord(Node *ptr) {
 }
 
 Node* SkipList::find(int id, int opt = 0) {
-	int level = maxLevel;
+	int level = maxLevel-1;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
 
