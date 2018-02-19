@@ -1,3 +1,3 @@
 all:
-	g++ -g skiplist.cpp -o skiplist -std=c++11 && ./skiplist 5 99999
+	g++ -g database.cpp skiplist_impl.cpp -o database && ./database 5 99999
 
