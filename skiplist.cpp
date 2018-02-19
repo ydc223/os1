@@ -51,7 +51,6 @@ public:
 };
 
 SkipList::~SkipList() {
-
     Node *n;
     int numNodes=0;
 
@@ -59,12 +58,10 @@ SkipList::~SkipList() {
     for (n=header; n!=NULL; n=&(n->forwarding[0])) {
     	numNodes++;
     }
-    cout << "Number of nodes: "<<numNodes<<endl;
 
 	// Iterate over the linked list backwards and delete all nodes.
-    for(int j = numNodes; j > 0; j--){
+    for(int j = numNodes; j < 0; j--){
     	n=header;
-    	cout << j<<endl;
     	for (int i = 0; i < numNodes; i++) {
 	    	n=&(n->forwarding[0]);
     	}
@@ -282,7 +279,6 @@ void SkipList::del(int id) {
     	// newNode forwarding set to the next
 	    int level = delNode->level;
 	    for (int i = 0; i < level; i++) {
-	    	// cout << "DelNode Data"<<delNode->data<<endl;
 			Node *prev = findAtLevel(id, i);
 			(prev->forwarding)[i] = delNode->forwarding[i];
 	   	}
@@ -397,7 +393,11 @@ int choose(string command, SkipList S, string arguments) {
 					}
 				} else {
 					float averageGpa = S.range(v[0], v[1], 1);
-					cout << "The average gpa in the range " << v[0] << " to "<< v[1] << " is " << averageGpa << endl;
+					if(averageGpa!=averageGpa) {
+						cout << "The average gpa in the range "<< v[0] << " to "<< v[1] << " does not exist."<<endl;
+					} else {
+						cout << "The average gpa in the range " << v[0] << " to "<< v[1] << " is " << averageGpa << endl;
+					}
 				}
 				break; 
 			}
@@ -431,7 +431,7 @@ int choose(string command, SkipList S, string arguments) {
 				        // cout << line << endl;
 				        string fileCommand = line.substr(0, line.find(" "));
 				        string substring2 = line.substr(line.find(" ") + 1);
-				        cout<<"Command: "<<fileCommand<<" Line: "<<line << "substr:"<< substring2<<endl; // Prints our STRING.
+				        // cout<<"Command: "<<fileCommand<<" Line: "<<line << "substr:"<< substring2<<endl; // Prints our STRING.
 				        int checkIfOver = choose(fileCommand, S, substring2);
 				        if(checkIfOver) {
 				        	return 1;
@@ -462,31 +462,13 @@ int main(int argc, char* argv[])
 	srand(time(0));
 	SkipList S;
 
-	// cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
-
-	// cout << "---------INSERTING 3-------------" << endl;
-	// S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 5-------------" << endl;
-	// S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 4-------------" << endl;
-	// S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 8-------------" << endl;
-	// S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
-	// // S.print();
-	// cout << "---------INSERTING 6-------------" << endl;
-	// S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
-
-
 	Options resolveOption(string command);
 	bool file = false;
 	string command;
 	int isOver = 0;
 
 	while(!isOver) {
-		cout<<"Input a command please"<<endl;
+		cout<<"Input a command, please"<<endl;
 		cin >> command;
 		string line;
 		getline(std::cin, line);
@@ -495,37 +477,3 @@ int main(int argc, char* argv[])
     
     return 0;
 }
-
-
-
-
-	// maxLevel =  atoi(argv[1]);
-	// maxValue =  atoi(argv[2]);
-	// cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
-
-	// SkipList S = SkipList();
-	// S.print();
-	// cout << "---------INSERTING 3-------------" << endl;
-	// S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	// cout << "---------INSERTING 5-------------" << endl;
-	// S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	// cout << "---------INSERTING 4-------------" << endl;
-	// S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	// cout << "---------INSERTING 8-------------" << endl;
-	// S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	// cout << "---------INSERTING 6-------------" << endl;
-	// S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	// cout << "---------DELETING 6-------------" << endl;
-	// S.del(6);
-	// S.print();
-	// cout << "---------DELETING 4-------------" << endl;
-	// S.del(4);
-	// S.print();
-	// Node * val = S.find(3);
-	// cout << "Return value from find " << val->data << endl;
-
