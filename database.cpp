@@ -46,10 +46,7 @@ int choose(string command, SkipList S, string arguments) {
 				iss >> gpa;
 				iss >> numOfCourses;
 
-				// cout <<  fName << " "<< lName << " "<< age <<" "<< year<<" "<< gpa <<" "<< numOfCourses <<" "<< endl;
-
 				S.insert(id, fName, lName, age, year, gpa, numOfCourses);
-				// S.print();
 				break; 
 			}
 			//Find
@@ -169,27 +166,29 @@ int choose(string command, SkipList S, string arguments) {
 		return 0;
 }
 
+//You must input maxLevel and MaxValue as command line arguments
 int main(int argc, char* argv[]) 
 {
-	int maxLevel =  atoi(argv[1]);
-	int maxValue =  atoi(argv[2]);
+	if(argc == 3) {
+		int maxLevel =  atoi(argv[1]);
+		int maxValue =  atoi(argv[2]);
+		srand(time(0));
 
-	srand(time(0));
+		SkipList S = SkipList(maxLevel, maxValue);
 
-	SkipList S = SkipList(maxLevel, maxValue);
+		Options resolveOption(string command);
+		bool file = false;
+		string command;
+		int isOver = 0;
 
-	Options resolveOption(string command);
-	bool file = false;
-	string command;
-	int isOver = 0;
-
-	while(!isOver) {
-		cout<<"Input a command, please"<<endl;
-		cin >> command;
-		string line;
-		getline(std::cin, line);
-		isOver = choose(command, S, line);
-	}
-    
+		while(!isOver) {
+			cout<<"Input a command, please"<<endl;
+			cin >> command;
+			string line;
+			getline(std::cin, line);
+			isOver = choose(command, S, line);
+		}
+		return 0;
+	} 
     return 0;
 }
