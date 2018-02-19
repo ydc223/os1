@@ -39,6 +39,7 @@ public:
     SkipList();
     ~SkipList();
     void insert(int id, string fName, string lName, int age, int year, double gpa, int numOfCourses);
+    void updateNode(Node* node, string fName, string lName, int age, int year, double gpa, int numOfCourses);
     void del(int id);
     Node* find(int id, int opt);
     void range(int id1, int id2, int opt);
@@ -114,7 +115,7 @@ void SkipList::getRecord(Node *ptr) {
     cout << ptr->record->age << " Year: " << ptr->record->year << " Gpa: " << ptr->record->gpa << " Number of courses: " << ptr->record->numOfCourses<<endl;
 }
 
-Node* SkipList::find(int id, int opt = 0) {
+Node* SkipList::find(int id, int returnPrev = 0) {
 	int level = maxLevel-1;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
@@ -126,7 +127,7 @@ Node* SkipList::find(int id, int opt = 0) {
 	    		next = &(current->forwarding[level]);
 	    	} else {
 	    		// cout << "did not find an element, next one is: "<<next->data<< endl;
-	    		if (opt == 1) {
+	    		if (returnPrev == 1) {
 	    			// if searching to insert return the previous one
 	    			return current;
 	    		} else {
@@ -143,10 +144,6 @@ Node* SkipList::find(int id, int opt = 0) {
 	    }
 	}
 	// cout << "found an element: "<< next->data << " at level "<< level<< endl;
-	if (opt == 1) {
-		// if searching to insert return the previous one
-		return current;
-	} 
 	return next;
 }
 
@@ -238,62 +235,78 @@ Node* SkipList::findAtLevel(int id, int level) {
 	return current;
 }
 
+void SkipList::updateNode(Node* node, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
+	node->record->fName = fName;
+    node->record->lName = lName;
+    node->record->age = age;
+    node->record->year = year;
+    node->record->gpa = gpa;
+    node->record->numOfCourses = numOfCourses;
+}
+
 void SkipList::insert(int id, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
-
-    int level = (rand() % maxLevel);
-    Node * newNode = new Node;
-    newNode->data = id;
-    newNode->forwarding = new Node[level];
-    newNode->level = level;
-    newNode->record = new Record;
-
-    newNode->record->fName = fName;
-    newNode->record->lName = lName;
-    newNode->record->age = age;
-    newNode->record->year = year;
-    newNode->record->gpa = gpa;
-    newNode->record->numOfCourses = numOfCourses;
 
     Node* prev = find(id, 1);
     cout << "Find in insert, prev node is: "<<prev-> data <<". ";
 
-    // newNode forwarding set to the next
-    for (int i = 0; i < level; i++) {
-    	if (prev->level > i) {
-    	} else {
-    		prev = findAtLevel(id, i);
-    	}
-    	newNode->forwarding[i] = prev->forwarding[i];
-		(prev->forwarding)[i] = *newNode;
-   	}
+    //If the node exists, then update it
+    if(prev->data == id) {
+    	updateNode(prev, fName, lName, age, year, gpa, numOfCourses);
+    } else {
+    	// Else, insert a new node
+	    int level = (rand() % maxLevel);
+	    Node * newNode = new Node;
+	    newNode->data = id;
+	    newNode->forwarding = new Node[level];
+	    newNode->level = level;
+	    newNode->record = new Record;
 
-    cout << "Level of current insertion: " << level << endl;
+	    newNode->record->fName = fName;
+	    newNode->record->lName = lName;
+	    newNode->record->age = age;
+	    newNode->record->year = year;
+	    newNode->record->gpa = gpa;
+	    newNode->record->numOfCourses = numOfCourses;
+
+	    // newNode forwarding set to the next
+	    for (int i = 0; i < level; i++) {
+	    	if (prev->level > i) {
+	    	} else {
+	    		prev = findAtLevel(id, i);
+	    	}
+	    	newNode->forwarding[i] = prev->forwarding[i];
+			(prev->forwarding)[i] = *newNode;
+	   	}
+
+	    cout << "Level of current insertion: " << level << endl;
+    }
 }
 
 void SkipList::del(int id) {
     Node* delNode = find(id);
     if(delNode == NULL) {
-    	// cout << "This node doesn't exist "<<delNode-> data <<". "<< endl;
+    	cout << "This node doesn't exist "<<delNode-> data <<". "<< endl;
     	exit (EXIT_FAILURE);
+    } else {
+    	// newNode forwarding set to the next
+	    int level = delNode->level;
+	    for (int i = 0; i < level; i++) {
+	    	cout << "DelNode Data"<<delNode->data<<endl;
+	    	
+			Node *prev = findAtLevel(id, i);
+			// cout << "Prev at level " << i << " with value " << prev->data << " ";
+			// cout << "Deleting forwarding at level " << i << " with value " << delNode->forwarding[i].data<< " ";
+			// cout << "Prev forwarding at level " << i << " with value " << prev->forwarding[i].data<< endl;
+
+			(prev->forwarding)[i] = delNode->forwarding[i];
+	   	}
+
+	   	// delete[] delNode->forwarding;
+	   	// delete delNode->record;
+	   	// TODO: delete record and 
+	   	// Perche sef fault ?
+	   	// delete delNode;
     }
-    // newNode forwarding set to the next
-    int level = delNode->level;
-    for (int i = 0; i < level; i++) {
-    	cout << "DelNode Data"<<delNode->data<<endl;
-    	
-		Node *prev = findAtLevel(id, i);
-		// cout << "Prev at level " << i << " with value " << prev->data << " ";
-		// cout << "Deleting forwarding at level " << i << " with value " << delNode->forwarding[i].data<< " ";
-		// cout << "Prev forwarding at level " << i << " with value " << prev->forwarding[i].data<< endl;
-
-		(prev->forwarding)[i] = delNode->forwarding[i];
-   	}
-
-   	// delete[] delNode->forwarding;
-   	// delete delNode->record;
-   	// TODO: delete record and 
-   	// Perche sef fault ?
-   	// delete delNode;
 }
 
 // Stack is empty function
@@ -356,7 +369,12 @@ int choose(string command, SkipList S, string arguments) {
 				int id;
 				iss >> id;
 				Node* node = S.find(id);
-				S.getRecord(node);
+				if (node != nullptr){
+					S.getRecord(node);
+				} else {
+					cout << "The record does not exist"<<endl;
+				}
+				
 				break; 
 			}
 			case 2: {
@@ -451,8 +469,7 @@ int choose(string command, SkipList S, string arguments) {
 			}
 			case 9: {
 
-				cout << "Option is invalid. Please input a valid option";
-				iss >> command;
+				cout << "Option is invalid. Please input a valid option"<<endl;
 				break; 
 			}
 		}
