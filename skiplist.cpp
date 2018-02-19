@@ -18,7 +18,6 @@ struct Node {
 	Node* forwarding;
 	int level;
 	~Node(){
-
 	}
 };
 
@@ -42,33 +41,35 @@ public:
     void updateNode(Node* node, string fName, string lName, int age, int year, double gpa, int numOfCourses);
     void del(int id);
     Node* find(int id, int opt);
-    void range(int id1, int id2, int opt);
+    float range(int id1, int id2, int opt);
     int findComp(int id);
     Node* findAtLevel(int id, int level);
 
     bool isEmpty();
     void print();
-    void getRecord(Node *ptr);
+    void printRecord(Node *ptr);
 };
 
 SkipList::~SkipList() {
-	// cout<<"Deconstruct"<<endl;
-    //Initialise a holder node
-    Node *n;
-    Node *prev = NULL;
-    // Iterate over the linked list
-    // and delete all nodes.
-    int numNodes;
 
+    Node *n;
+    int numNodes=0;
+
+    //Count the number of nodes
     for (n=header; n!=NULL; n=&(n->forwarding[0])) {
     	numNodes++;
     }
+    cout << "Number of nodes: "<<numNodes<<endl;
 
-    for(numNodes; numNodes < 0; numNodes--){
+	// Iterate over the linked list backwards and delete all nodes.
+    for(int j = numNodes; j > 0; j--){
     	n=header;
-    	for (int i = 0; i<numNodes; i++) {
+    	cout << j<<endl;
+    	for (int i = 0; i < numNodes; i++) {
 	    	n=&(n->forwarding[0]);
     	}
+    	delete[] n->forwarding;
+    	delete n->record;
     	delete n;
     }
 }
@@ -99,7 +100,7 @@ void SkipList::print() {
 
     Node *current = &header->forwarding[0];
     while (current->data != maxValue) {
-    	cout << "Level: " << current->level << " Val: " << current->data << " Name: "<< current->record-> fName << " | ";
+    	cout << "Level: " << current->level << " Val: " << current->data << " Name: "<< current->record-> fName << " Forwarding: | ";
     	for (int i = 0; i < current->level; i++) {
 
     		cout << (current->forwarding)[i].data << " ";
@@ -110,11 +111,12 @@ void SkipList::print() {
     cout << endl;
 }
 
-void SkipList::getRecord(Node *ptr) {
+void SkipList::printRecord(Node *ptr) {
     cout << "Id: " << ptr->data << " First Name: " << ptr->record->fName << " Last Name: " << ptr->record->lName << " Age: "; 
     cout << ptr->record->age << " Year: " << ptr->record->year << " Gpa: " << ptr->record->gpa << " Number of courses: " << ptr->record->numOfCourses<<endl;
 }
 
+//I am not following the exact 
 Node* SkipList::find(int id, int returnPrev = 0) {
 	int level = maxLevel-1;
     Node *current = header;
@@ -126,60 +128,55 @@ Node* SkipList::find(int id, int returnPrev = 0) {
 	    		level --;
 	    		next = &(current->forwarding[level]);
 	    	} else {
-	    		// cout << "did not find an element, next one is: "<<next->data<< endl;
 	    		if (returnPrev == 1) {
-	    			// if searching to insert return the previous one
+	    			// if searching from the insert function return the previous one
 	    			return current;
 	    		} else {
-
 	    			return nullptr;
 	    		}
 	    	}
 	    } else if (next->data < id) {
-	    	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
     		current = next;
-    		// cout << "current "<< current->data<<endl;
     		next = &(current->forwarding[level]);
-    		// cout << "next "<< next->data<<endl;
 	    }
 	}
-	// cout << "found an element: "<< next->data << " at level "<< level<< endl;
 	return next;
 }
 
+// Same as the find function, but instead returns the number of comparisons
+// I am not 100% sure what you call comparisons exactly, so I inceremnt comp after all comparison if statements
 int SkipList::findComp(int id) {
 	int level = maxLevel-1;
 	int comp = 0;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
     while (next->data != id) {
-
     	comp++;
+
 	    if(next->data > id) {
 	    	comp++;
+
 	    	if (level != 0){
 	    		comp++;
 	    		level --;
 	    		next = &(current->forwarding[level]);
 	    	} else {
-	    		// cout << "did not find an element, next one is: "<<next->data<< endl;
 	    		return comp;
 	    	}
 	    } else if (next->data < id) {
 	    	comp++;
-	    	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
     		current = next;
-    		// cout << "current "<< current->data<<endl;
     		next = &(current->forwarding[level]);
-    		// cout << "next "<< next->data<<endl;
 	    }
 	}
-	// cout << "found an element: "<< next->data << " at level "<< level<< endl;
 	return comp;
 }
 
-void SkipList::range(int id1, int id2, int opt = 0) {
-	int level = maxLevel-1;
+// This function addresses both range and gpa functionalities
+// Depending on the value of gpa the outputs vary
+// it return the average gpa in range if gpa = 1
+float SkipList::range(int id1, int id2, int gpa = 0) {
+	int level = maxLevel - 1;
     Node *current = header;
     Node *next = &(current->forwarding[level]);
     Node *start;
@@ -201,10 +198,9 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 	}
 	
 	start = next;
-
-	if (opt == 0){
+	if (gpa == 0){
 		while (start->data >= id1 && start->data <= id2) {
-			getRecord(start);
+			printRecord(start);
 			start = &start->forwarding[0];
 		}
 	} else {
@@ -216,25 +212,23 @@ void SkipList::range(int id1, int id2, int opt = 0) {
 			count++;
 			start = &start->forwarding[0];
 		}
-		av = total/count;
-		cout <<av<<endl;
+		return av = total/count;
 	}
-	
+	return 0;
 }
 
+//Finds a previous node at the specified level
 Node* SkipList::findAtLevel(int id, int level) {
     Node *current = header;
     Node *next = &current->forwarding[level];
-    // cout << "In findPrevLevel current data: " << next->data << endl;
     while (next->data < id) {
-    	// cout << next->data << " is smaller than " << id << ". Level is: "<< level<< endl;
 		current = next;
 		next = &current->forwarding[level];
 	}
-	// cout << "found a prev: " << current->data << endl;
 	return current;
 }
 
+//Update the info in the record
 void SkipList::updateNode(Node* node, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
 	node->record->fName = fName;
     node->record->lName = lName;
@@ -244,10 +238,10 @@ void SkipList::updateNode(Node* node, string fName, string lName, int age, int y
     node->record->numOfCourses = numOfCourses;
 }
 
+//Inserts a value
 void SkipList::insert(int id, string fName, string lName, int age, int year, double gpa, int numOfCourses) {
 
     Node* prev = find(id, 1);
-    cout << "Find in insert, prev node is: "<<prev-> data <<". ";
 
     //If the node exists, then update it
     if(prev->data == id) {
@@ -277,35 +271,21 @@ void SkipList::insert(int id, string fName, string lName, int age, int year, dou
 	    	newNode->forwarding[i] = prev->forwarding[i];
 			(prev->forwarding)[i] = *newNode;
 	   	}
-
-	    cout << "Level of current insertion: " << level << endl;
     }
 }
 
 void SkipList::del(int id) {
     Node* delNode = find(id);
     if(delNode == NULL) {
-    	cout << "This node doesn't exist "<<delNode-> data <<". "<< endl;
-    	exit (EXIT_FAILURE);
+    	cout << "The student with id "<<id <<" doesn't exist."<< endl;
     } else {
     	// newNode forwarding set to the next
 	    int level = delNode->level;
 	    for (int i = 0; i < level; i++) {
-	    	cout << "DelNode Data"<<delNode->data<<endl;
-	    	
+	    	// cout << "DelNode Data"<<delNode->data<<endl;
 			Node *prev = findAtLevel(id, i);
-			// cout << "Prev at level " << i << " with value " << prev->data << " ";
-			// cout << "Deleting forwarding at level " << i << " with value " << delNode->forwarding[i].data<< " ";
-			// cout << "Prev forwarding at level " << i << " with value " << prev->forwarding[i].data<< endl;
-
 			(prev->forwarding)[i] = delNode->forwarding[i];
 	   	}
-
-	   	// delete[] delNode->forwarding;
-	   	// delete delNode->record;
-	   	// TODO: delete record and 
-	   	// Perche sef fault ?
-	   	// delete delNode;
     }
 }
 
@@ -338,10 +318,8 @@ int choose(string command, SkipList S, string arguments) {
 	istringstream iss(arguments);
 
 	switch(resolveOption(command)) {
-			case 0: {
-
-				cout << "------Insert---------"<<endl;
-				
+			// Insert
+			case 0: {				
 				int id;
 				string fName;
 				string lName;
@@ -358,47 +336,45 @@ int choose(string command, SkipList S, string arguments) {
 				iss >> gpa;
 				iss >> numOfCourses;
 
-				cout <<  fName << " "<< lName << " "<< age <<" "<< year<<" "<< gpa <<" "<< numOfCourses <<" "<< endl;
+				// cout <<  fName << " "<< lName << " "<< age <<" "<< year<<" "<< gpa <<" "<< numOfCourses <<" "<< endl;
 
 				S.insert(id, fName, lName, age, year, gpa, numOfCourses);
-				S.print();
+				// S.print();
 				break; 
 			}
+			//Find
 			case 1: {
-				cout << "-------find------"<<endl;
 				int id;
 				iss >> id;
 				Node* node = S.find(id);
 				if (node != nullptr){
-					S.getRecord(node);
+					S.printRecord(node);
 				} else {
 					cout << "The record does not exist"<<endl;
 				}
 				
 				break; 
 			}
+			//Sfind
 			case 2: {
-				cout << "sfind";
 				int id;
 				iss >> id;
 				int comparisons = S.findComp(id);
 				cout << "Number of comparisons: " << comparisons << endl;
 				break; 
 			}
+			//Range
 			case 3: {
-				cout << "range";
 				int id1;
 				int id2;
 				iss >> id1;
 				iss >> id2;
 				S.range(id1, id2);
-				// string line;
-				// getline(std::cin, line);
 				break;
 			} 
+			//GPA and GPA range
 			case 4: {
 				int temp;
-				cout << "gpa "<<endl;
 
 				vector<int> v;
 
@@ -419,23 +395,25 @@ int choose(string command, SkipList S, string arguments) {
 					} else {
 						cout << "Record with such id does not exist"<< endl;
 					}
-					
 				} else {
-					cout << "The average gpa in the range " << v[0] << " to "<< v[1]<< " is ";
-					S.range(v[0], v[1], 1);
+					float averageGpa = S.range(v[0], v[1], 1);
+					cout << "The average gpa in the range " << v[0] << " to "<< v[1] << " is " << averageGpa << endl;
 				}
 				break; 
 			}
+			//Delete
 			case 5: {
 				int id;
 				iss >> id;
 				S.del(id);
 				break; 
 			}
+			//Print
 			case 6: {
 				S.print();
 				break; 
 			}
+			//Load
 			case 7: {
 				string filename;
 				iss >> filename;
@@ -443,33 +421,34 @@ int choose(string command, SkipList S, string arguments) {
 				string line;
 				ifstream infile;
 				infile.open(filename);
-		        while(!infile.eof()) // To get you all the lines.
-		        {
-			        getline(infile,line); // Saves the line in STRING.
-			        cout << line << endl;
-			        string fileCommand = line.substr(0, line.find(" "));
-			        string substring2 = line.substr(line.find(" ") + 1);
-			        cout<<"Command: "<<fileCommand<<" Line: "<<line << "substr:"<< substring2<<endl; // Prints our STRING.
-			        int checkIfOver = choose(fileCommand, S, substring2);
-			        if(checkIfOver) {
-			        	return 1;
+
+				if (infile.fail()) {
+			      cerr << "Error opening file " << filename << endl;
+			    } else {
+			    	while( !infile.fail() && !infile.eof()) // To get you all the lines.
+			        {
+				        getline(infile,line); // Saves the line in STRING.
+				        // cout << line << endl;
+				        string fileCommand = line.substr(0, line.find(" "));
+				        string substring2 = line.substr(line.find(" ") + 1);
+				        cout<<"Command: "<<fileCommand<<" Line: "<<line << "substr:"<< substring2<<endl; // Prints our STRING.
+				        int checkIfOver = choose(fileCommand, S, substring2);
+				        if(checkIfOver) {
+				        	return 1;
+				        }
 			        }
-		        }
-
+			    }
 				infile.close();
-
-				
-				getline(std::cin, line);
 				break; 
 			}
+			//Exit
 			case 8: {
-				// implement deconstructor
-				cout << "exit";
+				// deconstructor gets called autoatically upon the program completion
 				return 1;
 			}
+			//Invalid command
 			case 9: {
-
-				cout << "Option is invalid. Please input a valid option"<<endl;
+				cout << "Option is invalid."<<endl;
 				break; 
 			}
 		}
@@ -481,24 +460,24 @@ int main(int argc, char* argv[])
 	maxLevel =  atoi(argv[1]);
 	maxValue =  atoi(argv[2]);
 	srand(time(0));
-
-	cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
-
 	SkipList S;
-	cout << "---------INSERTING 3-------------" << endl;
-	S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 5-------------" << endl;
-	S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 4-------------" << endl;
-	S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 8-------------" << endl;
-	S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
-	// S.print();
-	cout << "---------INSERTING 6-------------" << endl;
-	S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
+
+	// cout << "MaxLevel: " <<  maxLevel << " MaxValue: " << maxValue << endl;
+
+	// cout << "---------INSERTING 3-------------" << endl;
+	// S.insert(3, "yana", "chala", 18, 2016, 3.9, 3);
+	// // S.print();
+	// cout << "---------INSERTING 5-------------" << endl;
+	// S.insert(5, "hy", "chala", 18, 2016, 3.9, 3);
+	// // S.print();
+	// cout << "---------INSERTING 4-------------" << endl;
+	// S.insert(4, "ji", "chala", 18, 2016, 3.9, 3);
+	// // S.print();
+	// cout << "---------INSERTING 8-------------" << endl;
+	// S.insert(8, "po", "chala", 18, 2016, 3.9, 3);
+	// // S.print();
+	// cout << "---------INSERTING 6-------------" << endl;
+	// S.insert(6, "yy", "chala", 18, 2016, 3.9, 3);
 
 
 	Options resolveOption(string command);
@@ -512,14 +491,9 @@ int main(int argc, char* argv[])
 		string line;
 		getline(std::cin, line);
 		isOver = choose(command, S, line);
-		cout << isOver;
 	}
-	
-
-	
     
     return 0;
-	
 }
 
 
